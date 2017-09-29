@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Status &bullet; {{ .owner }}</title>
+    <link rel="icon" type="image/png" href="static/img/favicon.png">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://fonts.googleapis.com/css?family=Raleway" rel="stylesheet">
+    <link rel="stylesheet" href="static/css/app.css" />
+    <link rel="stylesheet" href="static/css/font-awesome.min.css">
+</head>
+<body>
+    <div class="header"></div>
+    <div class="page">
+        <div class="spacer">
+
+            <div class="flex row">
+                <img class="logo" src="static/img/logo.png" />
+            </div>
+
+            <div class="info-header">
+
+                <div class="notification success">
+                    <h1>All Systems Operational</h1>
+                </div>
+
+            </div>
+
+            <div class="main flex row wrap">
+
+                <div class="incidents">
+                    <div class="line">
+                        <h2>Incidents</h2>
+                    </div>
+
+                    <div class="line empty">
+                        Sep 29, 2017
+                    </div>
+                    <div class="line empty">
+                        Sep 28, 2017
+                    </div>
+                    <div class="line">
+                        <div class="flex row">
+                            <span class="date">Sep 27, 2017</span>
+                            <div class="content">
+                                <h3>Intermittent issues with Spaces</h3>
+                                <p><b>Resolved</b> - Our engineers have resolved the issue with our Spaces platform at this time. Please open a ticket with our support team if you continue to experience any issues with the service. </p>
+                                <p><b>Monitoring</b> - Our engineers have resolved the issue with our Spaces platform at this time. Please open a ticket with our support team if you continue to experience any issues with the service. </p>
+
+                                <small>Resolved Sep 25, 19:59 UTC</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="line empty">
+                        Sep 26, 2017
+                    </div>
+                    <div class="line">
+                        <div class="flex row">
+                            <span class="date">Sep 25, 2017</span>
+                            <div class="content">
+                                <h3>Intermittent issues with Spaces</h3>
+                                <p><b>Resolved</b> - Our engineers have resolved the issue with our Spaces platform at this time. Please open a ticket with our support team if you continue to experience any issues with the service. </p>
+                                <p><b>Monitoring</b> - Our engineers have resolved the issue with our Spaces platform at this time. Please open a ticket with our support team if you continue to experience any issues with the service. </p>
+                                <p><b>Investigating</b> - We are investigating a small number of requests with high latency.</p>
+                                <small>Resolved Sep 25, 19:59 UTC</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="services">
+
+                    <div class="group">
+                        <div class="line">
+                            <h2>LEGO</h2>
+                        </div>
+                        <div class="line">
+                            <p>API <span class="fa fa-check-circle indicator success"></span></p>
+                        </div>
+                        <div class="line">
+                            <p>WEBAPP</p>
+                        </div>
+                    </div>
+
+                    <div class="group">
+                        <div class="line">
+                            <h2>Other</h2>
+                        </div>
+                        <div class="line">
+                            <p>FOTO <span class="fa fa-check-circle indicator success"></span></p>
+                        </div>
+                        <div class="line">
+                            <p>PR <span class="fa fa-info-circle indicator info"></span></p>
+                        </div>
+                        <div class="line">
+                            <p>Sentry <span class="fa  fa-exclamation-circle indicator warning"></span></p>
+                        </div>
+                        <div class="line">
+                            <p>Drone <span class="fa  fa-times-circle indicator critical"></span></p>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="hr"></div>
+
+            <div class="flex row justify-end">
+                <p class="footer">Powered by <a href="https://github.com/eirsyl/statuspage">Statuspage</a></p>
+            </div>
+
+        </div>
+
+    </div>
+</body>
+</html>
