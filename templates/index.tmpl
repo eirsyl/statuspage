@@ -20,9 +20,24 @@
 
             <div class="info-header">
 
-                <div class="notification success">
-                    <h1>All Systems Operational</h1>
-                </div>
+
+                {{ if eq .mostCriticalStatus 0 }}
+                    <div class="notification success">
+                        <h1>All Systems Operational</h1>
+                    </div>
+                {{ else if eq .mostCriticalStatus 1 }}
+                    <div class="notification info">
+                        <h1>Performance Issues on some services</h1>
+                    </div>
+                {{ else if eq .mostCriticalStatus 2 }}
+                    <div class="notification warning">
+                        <h1>Partial Outage on some services</h1>
+                    </div>
+                {{ else if eq .mostCriticalStatus 3 }}
+                    <div class="notification critical">
+                        <h1>Major Outage on some services</h1>
+                    </div>
+                {{ end }}
 
             </div>
 
@@ -70,35 +85,43 @@
 
                 <div class="services">
 
-                    <div class="group">
-                        <div class="line">
-                            <h2>LEGO</h2>
-                        </div>
-                        <div class="line">
-                            <p>API <span class="fa fa-check-circle indicator success"></span></p>
-                        </div>
-                        <div class="line">
-                            <p>WEBAPP</p>
-                        </div>
-                    </div>
+                    {{ $success := "fa-check-circle success" }}
+                    {{ $info := "fa-info-circle info" }}
+                    {{ $warning := "fa-exclamation-circle warning" }}
+                    {{ $critical := "fa-times-circle critical" }}
 
-                    <div class="group">
-                        <div class="line">
-                            <h2>Other</h2>
+                    {{ range $group, $services := .services }}
+
+                        <div class="group">
+                            <div class="line">
+                                <h2>{{ $group }}</h2>
+                            </div>
+
+                            {{ range $service := $services }}
+
+                                <div class="line">
+                                    <p>
+                                        {{ $service.Name }} - {{ $service.Status }}
+                                        <span class="
+                                            fa indicator
+                                            {{ if eq $service.Status "Operational" }}
+                                                {{ $success }}
+                                            {{ else if eq $service.Status "Performance Issues" }}
+                                                {{ $info }}
+                                            {{ else if eq $service.Status "Partial Outage" }}
+                                                {{ $warning }}
+                                            {{ else if eq $service.Status "Major Outage" }}
+                                                {{ $critical }}
+                                            {{ end }}
+                                        "></span>
+                                    </p>
+                                </div>
+
+                            {{ end }}
+
                         </div>
-                        <div class="line">
-                            <p>FOTO <span class="fa fa-check-circle indicator success"></span></p>
-                        </div>
-                        <div class="line">
-                            <p>PR <span class="fa fa-info-circle indicator info"></span></p>
-                        </div>
-                        <div class="line">
-                            <p>Sentry <span class="fa  fa-exclamation-circle indicator warning"></span></p>
-                        </div>
-                        <div class="line">
-                            <p>Drone <span class="fa  fa-times-circle indicator critical"></span></p>
-                        </div>
-                    </div>
+
+                    {{ end }}
 
                 </div>
 

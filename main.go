@@ -3,7 +3,7 @@ package main
 import (
 	"github.com/gin-gonic/gin"
 	"net/http"
-	"github.com/eirsyl/statuspage/statuspage"
+	"github.com/eirsyl/statuspage/src"
 	"github.com/go-redis/redis"
 	"os"
 	"strconv"
@@ -22,24 +22,33 @@ func main()  {
 		redisDBInt = 0
 	}
 
-
 	db := redis.NewClient(&redis.Options{
 		Addr:     redisAddr,
 		Password: redisPassword,
 		DB:       redisDBInt,
 	})
 
-	services := statuspage.Services{}
+	services := src.Services{}
 	services.Initialize(*db)
+
+	incidents := src.Incidents{}
+	incidents.Initialize(*db)
 
 	router := gin.Default()
 	router.Static("/static", "./static")
 	router.LoadHTMLGlob("templates/*")
 
 	router.GET("/", func(c *gin.Context) {
+
+		res, err := services.GetServices(true)
+		if err != nil {
+			panic(err)
+		}
+
 		c.HTML(http.StatusOK, "index.tmpl", gin.H{
 			"owner": "Abakus",
-			"services": services.GetServices(),
+			"services": src.AggregateServices(res),
+			"mostCriticalStatus": src.MostCriticalStatus(res),
 		})
 	})
 
