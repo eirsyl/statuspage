@@ -48,39 +48,30 @@
                         <h2>Incidents</h2>
                     </div>
 
-                    <div class="line empty">
-                        Sep 29, 2017
-                    </div>
-                    <div class="line empty">
-                        Sep 28, 2017
-                    </div>
-                    <div class="line">
-                        <div class="flex row">
-                            <span class="date">Sep 27, 2017</span>
-                            <div class="content">
-                                <h3>Intermittent issues with Spaces</h3>
-                                <p><b>Resolved</b> - Our engineers have resolved the issue with our Spaces platform at this time. Please open a ticket with our support team if you continue to experience any issues with the service. </p>
-                                <p><b>Monitoring</b> - Our engineers have resolved the issue with our Spaces platform at this time. Please open a ticket with our support team if you continue to experience any issues with the service. </p>
+                    {{ range $index, $aggregatedIncident := .incidents }}
+                        {{ $length := len $aggregatedIncident.Incidents }}
+                        {{ if eq $length 0 }}
+                            <div class="line empty">
+                                {{ $aggregatedIncident.Time.Format "Jan 02" }}
+                            </div>
+                        {{ else }}
+                            <div class="line">
+                                <div class="flex row">
+                                    <span class="date">{{ $aggregatedIncident.Time.Format "Jan 02" }}</span>
+                                    <div class="content">
+                                        {{ range $incident := $aggregatedIncident.Incidents }}
+                                            <h3>{{ $incident.Title }}</h3>
 
-                                <small>Resolved Sep 25, 19:59 UTC</small>
+                                            {{ range $update := $incident.Updates }}
+                                                <p><b>{{ $update.Status }}</b> - {{$update.Message}}</p>
+                                            {{ end }}
+                                        {{ end }}
+                                    </div>
+                                </div>
                             </div>
-                        </div>
-                    </div>
-                    <div class="line empty">
-                        Sep 26, 2017
-                    </div>
-                    <div class="line">
-                        <div class="flex row">
-                            <span class="date">Sep 25, 2017</span>
-                            <div class="content">
-                                <h3>Intermittent issues with Spaces</h3>
-                                <p><b>Resolved</b> - Our engineers have resolved the issue with our Spaces platform at this time. Please open a ticket with our support team if you continue to experience any issues with the service. </p>
-                                <p><b>Monitoring</b> - Our engineers have resolved the issue with our Spaces platform at this time. Please open a ticket with our support team if you continue to experience any issues with the service. </p>
-                                <p><b>Investigating</b> - We are investigating a small number of requests with high latency.</p>
-                                <small>Resolved Sep 25, 19:59 UTC</small>
-                            </div>
-                        </div>
-                    </div>
+                        {{ end }}
+                    {{ end }}
+
                 </div>
 
                 <div class="services">

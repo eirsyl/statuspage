@@ -2,31 +2,60 @@ package main
 
 import (
 	"github.com/gin-gonic/gin"
-	"net/http"
 	"github.com/eirsyl/statuspage/src"
-	"github.com/go-redis/redis"
+	"github.com/eirsyl/statuspage/src/routes"
 	"os"
-	"strconv"
+	"github.com/go-pg/pg"
+	"runtime"
 	"log"
 )
 
 func main()  {
 
-	redisAddr := os.Getenv("REDIS_ADDRESS")
-	redisPassword := os.Getenv("REDIS_PASSWORD")
-	redisDB := os.Getenv("REDIS_DB")
+	ConfigRuntime()
 
-	redisDBInt, err := strconv.Atoi(redisDB)
-	if err != nil {
-		log.Print("Could not parse Redis DB, using 0 as default.")
-		redisDBInt = 0
-	}
+	gin.SetMode(gin.ReleaseMode)
 
-	db := redis.NewClient(&redis.Options{
-		Addr:     redisAddr,
-		Password: redisPassword,
-		DB:       redisDBInt,
+	router := gin.Default()
+	router.Use(State())
+
+	router.Static("/static", "./static")
+	router.LoadHTMLGlob("templates/*")
+
+	router.GET("/", routes.Dashboard)
+
+	router.GET("/api/services", routes.ServiceList)
+	router.POST("/api/services", routes.ServicePost)
+	router.GET("/api/services/:id", routes.ServiceGet)
+	router.PATCH("/api/services/:id", routes.ServicePatch)
+	router.DELETE("/api/services/:id", routes.ServiceDelete)
+
+	router.Run()
+
+}
+
+func ConfigRuntime() {
+	nuCPU := runtime.NumCPU()
+	runtime.GOMAXPROCS(nuCPU)
+	log.Printf("Running with %d CPUs\n", nuCPU)
+}
+
+func State() gin.HandlerFunc {
+	pgAddr := os.Getenv("POSTGRES_ADDRESS")
+	pgUser := os.Getenv("POSTGRES_USER")
+	pgPassword := os.Getenv("POSTGRES_PASSWORD")
+	pgDB := os.Getenv("POSTGRES_DB")
+
+	db := pg.Connect(&pg.Options{
+		Addr: pgAddr,
+		User: pgUser,
+		Password: pgPassword,
+		Database: pgDB,
 	})
+
+	if err := src.CreateSchema(db); err != nil {
+		panic(err)
+	}
 
 	services := src.Services{}
 	services.Initialize(*db)
@@ -34,24 +63,9 @@ func main()  {
 	incidents := src.Incidents{}
 	incidents.Initialize(*db)
 
-	router := gin.Default()
-	router.Static("/static", "./static")
-	router.LoadHTMLGlob("templates/*")
-
-	router.GET("/", func(c *gin.Context) {
-
-		res, err := services.GetServices(true)
-		if err != nil {
-			panic(err)
-		}
-
-		c.HTML(http.StatusOK, "index.tmpl", gin.H{
-			"owner": "Abakus",
-			"services": src.AggregateServices(res),
-			"mostCriticalStatus": src.MostCriticalStatus(res),
-		})
-	})
-
-	router.Run()
-
+	return func(c *gin.Context) {
+		c.Set("services", services)
+		c.Set("incidents", incidents)
+		c.Next()
+	}
 }

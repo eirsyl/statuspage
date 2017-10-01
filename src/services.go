@@ -1,14 +1,12 @@
 package src
 
 import (
-	"github.com/go-redis/redis"
-	"encoding/json"
+	"github.com/go-pg/pg"
 )
 
-const REDIS_MAP = "statuspage_services"
 
 type Service struct {
-	ID string
+	ID int64
 	Name string
 	Status string
 	Description string
@@ -19,62 +17,58 @@ type Service struct {
 }
 
 type Services struct {
-	db redis.Client
+	db pg.DB
 }
 
-func (s *Services) Initialize(db redis.Client) {
+func (s *Services) Initialize(db pg.DB) {
 	s.db = db
 }
 
-func (s *Services) InsertService(id string, service Service) error {
-	serialized, err := json.Marshal(service)
-	if err != nil { return err }
-
-	if err := s.db.HSet(REDIS_MAP, id, serialized).Err(); err != nil {
-		return err
+func (s *Services) InsertService(service Service) error {
+	if service.Group == "" {
+		service.Group = "Other"
 	}
 
-	return nil
-}
-
-func (s *Services) RemoveService(id string) error {
-	err := s.db.HDel(REDIS_MAP, id).Err()
+	err := s.db.Insert(&service)
 	return err
 }
 
 func (s *Services) GetServices(enabled bool) ([]Service, error) {
-	services := []Service{}
+	var services []Service
 
-	results, err := s.db.HGetAll(REDIS_MAP).Result()
-	if err != err {
-		return nil, err
-	}
+	err := s.db.Model(&services).
+		Where("service.enabled = ?", true).
+		Select()
 
-	for id, result := range results {
-		var service Service
-		if err := json.Unmarshal([]byte(result), &service); err != nil {
-			return nil, err
-		}
-		service.ID = id
-
-		if service.Enabled == enabled {
-			services = append(services, service)
-		}
-	}
-
-	return services, nil
+	return services, err
 }
 
-func (s *Services) GetService(id string) (Service, error){
-	result, err := s.db.HGet(REDIS_MAP, id).Result()
-	if err != err {
-		return Service{}, err
+func (s *Services) GetService(id int64) (Service, error){
+	service := Service{
+		ID: id,
 	}
 
-	var service Service
-	if err := json.Unmarshal([]byte(result), &service); err != nil {
-		return Service{}, err
+	err := s.db.Select(&service)
+
+	return service, err
+}
+
+func (s *Services) UpdateService(id int64, service Service) error {
+	service.ID = id
+	if service.Group == "" {
+		service.Group = "Other"
 	}
 
-	return service, nil
+	err := s.db.Update(&service)
+	return err
+}
+
+func (s *Services) DeleteService(id int64) error {
+	service := Service{
+		ID: id,
+	}
+
+	err := s.db.Delete(&service)
+
+	return err
 }

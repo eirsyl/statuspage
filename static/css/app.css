@@ -216,6 +216,11 @@ h1 {
     color: #000;
     font-size: 18px;
     margin-bottom: 10px;
+    margin-top: 20px;
+}
+
+.incidents > .line .content h3:first-child {
+    margin-top: 0;
 }
 
 .incidents > .line .content b {

@@ -1,36 +1,65 @@
 package src
 
 import (
-	"github.com/go-redis/redis"
 	"time"
+	"github.com/go-pg/pg"
 )
 
 type Incident struct {
-	Id string
+	Id int64
 	Time time.Time
 	Title string
-	Resolved time.Time
+	Updates []*IncidentUpdate
 }
 
 type IncidentUpdate struct {
-	Id string
-	Incident string
+	Id int64
+	Time time.Time
+	IncidentId int64
 	Status string
 	Message string
 }
 
 type Incidents struct {
-	db redis.Client
+	db pg.DB
 }
 
-func (i *Incidents) Initialize(db redis.Client) {
+func (i *Incidents) Initialize(db pg.DB) {
 	i.db = db
 }
 
-func (i *Incidents) CreateIncident(incident Incident) error {
-	return nil
+func (i *Incidents) InsertIncident(incident Incident) error {
+	if incident.Time.IsZero() {
+		now := time.Now()
+		incident.Time = now
+	}
+	err := i.db.Insert(&incident)
+	return err
 }
 
-func (i *Incidents) CreateIncidentUpdate(incident string, update IncidentUpdate) error {
-	return nil
+func (i *Incidents) InsertIncidentUpdate(incident int64, update IncidentUpdate) error {
+	update.IncidentId = incident
+
+	if update.Time.IsZero() {
+		now := time.Now()
+		update.Time = now
+	}
+
+	err := i.db.Insert(&update)
+	return err
+}
+
+func (i *Incidents) GetLatestIncidents() ([]Incident, error) {
+	to := time.Now()
+	from := to.Add(-14 * 24 * time.Hour).Truncate(24 * time.Hour)
+
+	var incidents []Incident
+
+	err := i.db.Model(&incidents).
+		Column("incident.*", "Updates").
+		Where("time > ?", from).
+		Where("time < ?", to).
+		Select()
+
+	return incidents, err
 }
