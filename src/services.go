@@ -6,14 +6,14 @@ import (
 
 
 type Service struct {
-	ID int64
-	Name string
-	Status string
-	Description string
-	Group string
-	Link string
-	Tags []string
-	Enabled bool
+	ID int64 `json:"id"`
+	Name string `sql:",notnull" json:"name" binding:"required"`
+	Status string `sql:",notnull" json:"status" binding:"required,servicestatus"`
+	Description string `sql:",notnull" json:"description" binding:"required"`
+	Group string `sql:",notnull" json:"group" binding:"required"`
+	Link string `json:"link"`
+	Tags []string `json:"tags"`
+	Enabled bool `sql:",notnull" json:"enabled" binding:"required"`
 }
 
 type Services struct {
@@ -33,12 +33,10 @@ func (s *Services) InsertService(service Service) error {
 	return err
 }
 
-func (s *Services) GetServices(enabled bool) ([]Service, error) {
+func (s *Services) GetServices() ([]Service, error) {
 	var services []Service
 
-	err := s.db.Model(&services).
-		Where("service.enabled = ?", true).
-		Select()
+	err := s.db.Model(&services).Select()
 
 	return services, err
 }

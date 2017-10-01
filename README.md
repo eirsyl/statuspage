@@ -10,6 +10,5 @@ We use environment variables for configuration, this also includes the logo.
 ## Todo
 
 * API authorization
-* API payload validation
 * Incident API
 * Customize page with env variables

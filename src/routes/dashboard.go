@@ -10,7 +10,7 @@ func Dashboard(c *gin.Context) {
 	services, _ := c.Keys["services"].(src.Services)
 	incidents, _ := c.Keys["incidents"].(src.Incidents)
 
-	res, err := services.GetServices(true)
+	res, err := services.GetServices()
 	if err != nil {
 		panic(err)
 	}

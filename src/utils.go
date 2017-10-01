@@ -16,6 +16,10 @@ func AggregateServices (services []Service) AggregatedServices {
 	aggregated := AggregatedServices{}
 
 	for _, service := range services {
+		if service.Enabled == false {
+			continue
+		}
+
 		groupName := service.Group
 
 		group := aggregated[groupName]

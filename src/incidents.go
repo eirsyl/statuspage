@@ -6,18 +6,18 @@ import (
 )
 
 type Incident struct {
-	Id int64
-	Time time.Time
-	Title string
-	Updates []*IncidentUpdate
+	Id int64 `json:"id"`
+	Time time.Time `sql:",notnull" json:"time" binding:"required"`
+	Title string `sql:",notnull" json:"title" binding:"required"`
+	Updates []*IncidentUpdate `json:"updates"`
 }
 
 type IncidentUpdate struct {
-	Id int64
-	Time time.Time
-	IncidentId int64
-	Status string
-	Message string
+	Id int64 `json:"id"`
+	Time time.Time `sql:",notnull" json:"time" binding:"required"`
+	IncidentId int64 `sql:",notnull"`
+	Status string `sql:",notnull" json:"status" binding:"required,incidentstatus"`
+	Message string `sql:",notnull" json:"message" binding:"required"`
 }
 
 type Incidents struct {

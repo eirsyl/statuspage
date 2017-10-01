@@ -10,7 +10,7 @@ import (
 func ServiceList(c *gin.Context) {
 	services, _ := c.Keys["services"].(src.Services)
 
-	s, err := services.GetServices(true)
+	s, err := services.GetServices()
 	if err != nil {
 		panic(err)
 	}
@@ -22,7 +22,7 @@ func ServicePost(c *gin.Context) {
 	var service src.Service
 	err := c.BindJSON(&service)
 	if err != nil {
-		c.AbortWithStatus(http.StatusBadRequest)
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
@@ -67,7 +67,7 @@ func ServicePatch(c *gin.Context) {
 	var service src.Service
 	err = c.BindJSON(&service)
 	if err != nil {
-		c.AbortWithStatus(http.StatusBadRequest)
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 

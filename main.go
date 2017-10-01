@@ -2,6 +2,7 @@ package main
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/gin-gonic/gin/binding"
 	"github.com/eirsyl/statuspage/src"
 	"github.com/eirsyl/statuspage/src/routes"
 	"os"
@@ -18,6 +19,9 @@ func main()  {
 
 	router := gin.Default()
 	router.Use(State())
+
+	binding.Validator.RegisterValidation("incidentstatus", src.IncidentStatus)
+	binding.Validator.RegisterValidation("servicestatus", src.ServiceStatus)
 
 	router.Static("/static", "./static")
 	router.LoadHTMLGlob("templates/*")
