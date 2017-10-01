@@ -24,12 +24,12 @@ func (s *Services) Initialize(db pg.DB) {
 	s.db = db
 }
 
-func (s *Services) InsertService(service Service) error {
+func (s *Services) InsertService(service *Service) error {
 	if service.Group == "" {
 		service.Group = "Other"
 	}
 
-	err := s.db.Insert(&service)
+	err := s.db.Insert(service)
 	return err
 }
 
@@ -51,13 +51,13 @@ func (s *Services) GetService(id int64) (Service, error){
 	return service, err
 }
 
-func (s *Services) UpdateService(id int64, service Service) error {
+func (s *Services) UpdateService(id int64, service *Service) error {
 	service.ID = id
 	if service.Group == "" {
 		service.Group = "Other"
 	}
 
-	err := s.db.Update(&service)
+	err := s.db.Update(service)
 	return err
 }
 

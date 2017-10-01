@@ -34,6 +34,11 @@ func main()  {
 	router.PATCH("/api/services/:id", routes.ServicePatch)
 	router.DELETE("/api/services/:id", routes.ServiceDelete)
 
+	router.GET("/api/incidents", routes.IncidentList)
+	router.POST("/api/incidents", routes.IncidentPost)
+	router.GET("/api/incidents/:id", routes.IncidentGet)
+	router.DELETE("/api/incidents/:id", routes.IncidentDelete)
+
 	router.Run()
 
 }

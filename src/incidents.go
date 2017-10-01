@@ -7,7 +7,7 @@ import (
 
 type Incident struct {
 	Id int64 `json:"id"`
-	Time time.Time `sql:",notnull" json:"time" binding:"required"`
+	Time time.Time `sql:",notnull" json:"time"`
 	Title string `sql:",notnull" json:"title" binding:"required"`
 	Updates []*IncidentUpdate `json:"updates"`
 }
@@ -28,16 +28,16 @@ func (i *Incidents) Initialize(db pg.DB) {
 	i.db = db
 }
 
-func (i *Incidents) InsertIncident(incident Incident) error {
+func (i *Incidents) InsertIncident(incident *Incident) error {
 	if incident.Time.IsZero() {
 		now := time.Now()
 		incident.Time = now
 	}
-	err := i.db.Insert(&incident)
+	err := i.db.Insert(incident)
 	return err
 }
 
-func (i *Incidents) InsertIncidentUpdate(incident int64, update IncidentUpdate) error {
+func (i *Incidents) InsertIncidentUpdate(incident int64, update *IncidentUpdate) error {
 	update.IncidentId = incident
 
 	if update.Time.IsZero() {
@@ -45,7 +45,7 @@ func (i *Incidents) InsertIncidentUpdate(incident int64, update IncidentUpdate) 
 		update.Time = now
 	}
 
-	err := i.db.Insert(&update)
+	err := i.db.Insert(update)
 	return err
 }
 
@@ -62,4 +62,22 @@ func (i *Incidents) GetLatestIncidents() ([]Incident, error) {
 		Select()
 
 	return incidents, err
+}
+
+func (i *Incidents) GetIncident(id int64) (Incident, error) {
+	incident := Incident{
+		Id: id,
+	}
+
+	err := i.db.Select(&incident)
+	return incident, err
+}
+
+func (i *Incidents) DeleteIncident(id int64) error {
+	incident := Incident{
+		Id: id,
+	}
+
+	err := i.db.Delete(&incident)
+	return err
 }
