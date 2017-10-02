@@ -1,23 +1,23 @@
 package src
 
 import (
-	"time"
 	"github.com/go-pg/pg"
+	"time"
 )
 
 type Incident struct {
-	Id int64 `json:"id"`
-	Time time.Time `sql:",notnull" json:"time"`
-	Title string `sql:",notnull" json:"title" binding:"required"`
+	Id      int64             `json:"id"`
+	Time    time.Time         `sql:",notnull" json:"time"`
+	Title   string            `sql:",notnull" json:"title" binding:"required"`
 	Updates []*IncidentUpdate `json:"updates"`
 }
 
 type IncidentUpdate struct {
-	Id int64 `json:"id"`
-	Time time.Time `sql:",notnull" json:"time"`
-	IncidentId int64 `sql:",notnull"`
-	Status string `sql:",notnull" json:"status" binding:"required,incidentstatus"`
-	Message string `sql:",notnull" json:"message" binding:"required"`
+	Id         int64     `json:"id"`
+	Time       time.Time `sql:",notnull" json:"time"`
+	IncidentId int64     `sql:",notnull"`
+	Status     string    `sql:",notnull" json:"status" binding:"required,incidentstatus"`
+	Message    string    `sql:",notnull" json:"message" binding:"required"`
 }
 
 type Incidents struct {

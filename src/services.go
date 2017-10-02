@@ -4,16 +4,15 @@ import (
 	"github.com/go-pg/pg"
 )
 
-
 type Service struct {
-	ID int64 `json:"id"`
-	Name string `sql:",notnull" json:"name" binding:"required"`
-	Status string `sql:",notnull" json:"status" binding:"required,servicestatus"`
-	Description string `sql:",notnull" json:"description" binding:"required"`
-	Group string `sql:",notnull" json:"group" binding:"required"`
-	Link string `json:"link"`
-	Tags []string `json:"tags"`
-	Enabled bool `sql:",notnull" json:"enabled" binding:"required"`
+	ID          int64    `json:"id"`
+	Name        string   `sql:",notnull" json:"name" binding:"required"`
+	Status      string   `sql:",notnull" json:"status" binding:"required,servicestatus"`
+	Description string   `sql:",notnull" json:"description" binding:"required"`
+	Group       string   `sql:",notnull" json:"group" binding:"required"`
+	Link        string   `json:"link"`
+	Tags        []string `json:"tags"`
+	Enabled     bool     `sql:",notnull" json:"enabled" binding:"required"`
 }
 
 type Services struct {
@@ -41,7 +40,7 @@ func (s *Services) GetServices() ([]Service, error) {
 	return services, err
 }
 
-func (s *Services) GetService(id int64) (Service, error){
+func (s *Services) GetService(id int64) (Service, error) {
 	service := Service{
 		ID: id,
 	}

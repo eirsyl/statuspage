@@ -12,7 +12,7 @@ import (
 
 type AggregatedServices map[string][]Service
 
-func AggregateServices (services []Service) AggregatedServices {
+func AggregateServices(services []Service) AggregatedServices {
 	aggregated := AggregatedServices{}
 
 	for _, service := range services {
@@ -40,10 +40,10 @@ func AggregateServices (services []Service) AggregatedServices {
 
 func MostCriticalStatus(services []Service) int {
 	statusValues := map[string]int{
-		"Operational": 0,
+		"Operational":        0,
 		"Performance Issues": 1,
-		"Partial Outage": 2,
-		"Major Outage": 3,
+		"Partial Outage":     2,
+		"Major Outage":       3,
 	}
 
 	mostCritical := 0
@@ -63,7 +63,7 @@ func MostCriticalStatus(services []Service) int {
  */
 
 type AggregatedIncident struct {
-	Time time.Time
+	Time      time.Time
 	Incidents []Incident
 }
 
@@ -84,7 +84,7 @@ func AggregateIncidents(incidents []Incident) AggregatedIncidents {
 		}
 
 		aggregatedIncidents = append(aggregatedIncidents, AggregatedIncident{
-			Time: t,
+			Time:      t,
 			Incidents: filteredIncidents,
 		})
 	}
