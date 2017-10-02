@@ -1,8 +1,8 @@
 package routes
 
 import (
-	"github.com/gin-gonic/gin"
 	"github.com/eirsyl/statuspage/src"
+	"github.com/gin-gonic/gin"
 	"net/http"
 )
 
@@ -21,9 +21,9 @@ func Dashboard(c *gin.Context) {
 	}
 
 	c.HTML(http.StatusOK, "index.tmpl", gin.H{
-		"owner": "Abakus",
-		"services": src.AggregateServices(res),
+		"owner":              "Abakus",
+		"services":           src.AggregateServices(res),
 		"mostCriticalStatus": src.MostCriticalStatus(res),
-		"incidents": src.AggregateIncidents(inc),
+		"incidents":          src.AggregateIncidents(inc),
 	})
 }

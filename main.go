@@ -1,17 +1,17 @@
 package main
 
 import (
-	"github.com/gin-gonic/gin"
-	"github.com/gin-gonic/gin/binding"
 	"github.com/eirsyl/statuspage/src"
 	"github.com/eirsyl/statuspage/src/routes"
-	"os"
+	"github.com/gin-gonic/gin"
+	"github.com/gin-gonic/gin/binding"
 	"github.com/go-pg/pg"
-	"runtime"
 	"log"
+	"os"
+	"runtime"
 )
 
-func main()  {
+func main() {
 
 	ConfigRuntime()
 
@@ -61,8 +61,8 @@ func State() gin.HandlerFunc {
 	pgDB := os.Getenv("POSTGRES_DB")
 
 	db := pg.Connect(&pg.Options{
-		Addr: pgAddr,
-		User: pgUser,
+		Addr:     pgAddr,
+		User:     pgUser,
 		Password: pgPassword,
 		Database: pgDB,
 	})

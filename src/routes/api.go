@@ -1,8 +1,8 @@
 package routes
 
 import (
-	"github.com/gin-gonic/gin"
 	"github.com/eirsyl/statuspage/src"
+	"github.com/gin-gonic/gin"
 	"net/http"
 	"strconv"
 )
