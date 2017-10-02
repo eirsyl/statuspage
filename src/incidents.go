@@ -14,7 +14,7 @@ type Incident struct {
 
 type IncidentUpdate struct {
 	Id int64 `json:"id"`
-	Time time.Time `sql:",notnull" json:"time" binding:"required"`
+	Time time.Time `sql:",notnull" json:"time"`
 	IncidentId int64 `sql:",notnull"`
 	Status string `sql:",notnull" json:"status" binding:"required,incidentstatus"`
 	Message string `sql:",notnull" json:"message" binding:"required"`
@@ -69,7 +69,11 @@ func (i *Incidents) GetIncident(id int64) (Incident, error) {
 		Id: id,
 	}
 
-	err := i.db.Select(&incident)
+	err := i.db.Model(&incident).
+		Column("incident.*", "Updates").
+		Where("id = ?", id).
+		Select()
+
 	return incident, err
 }
 
@@ -79,5 +83,25 @@ func (i *Incidents) DeleteIncident(id int64) error {
 	}
 
 	err := i.db.Delete(&incident)
+	return err
+}
+
+func (i *Incidents) GetIncidentUpdate(id int64) (IncidentUpdate, error) {
+	incident := IncidentUpdate{
+		Id: id,
+	}
+
+	err := i.db.Select(&incident)
+
+	return incident, err
+}
+
+func (i *Incidents) DeleteIncidentUpdate(id int64) error {
+	incident := IncidentUpdate{
+		Id: id,
+	}
+
+	err := i.db.Delete(&incident)
+
 	return err
 }

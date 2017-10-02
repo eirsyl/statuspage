@@ -7,8 +7,8 @@ import (
 )
 
 func Dashboard(c *gin.Context) {
-	services, _ := c.Keys["services"].(src.Services)
-	incidents, _ := c.Keys["incidents"].(src.Incidents)
+	services := c.Keys["services"].(src.Services)
+	incidents := c.Keys["incidents"].(src.Incidents)
 
 	res, err := services.GetServices()
 	if err != nil {

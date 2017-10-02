@@ -12,7 +12,7 @@ import (
  */
 
 func ServiceList(c *gin.Context) {
-	services, _ := c.Keys["services"].(src.Services)
+	services := c.Keys["services"].(src.Services)
 
 	s, err := services.GetServices()
 	if err != nil {
@@ -30,7 +30,7 @@ func ServicePost(c *gin.Context) {
 		return
 	}
 
-	services, _ := c.Keys["services"].(src.Services)
+	services := c.Keys["services"].(src.Services)
 
 	err = services.InsertService(&service)
 	if err != nil {
@@ -49,7 +49,7 @@ func ServiceGet(c *gin.Context) {
 		return
 	}
 
-	services, _ := c.Keys["services"].(src.Services)
+	services := c.Keys["services"].(src.Services)
 
 	s, err := services.GetService(int64(id))
 	if err != nil {
@@ -75,7 +75,7 @@ func ServicePatch(c *gin.Context) {
 		return
 	}
 
-	services, _ := c.Keys["services"].(src.Services)
+	services := c.Keys["services"].(src.Services)
 
 	err = services.UpdateService(int64(id), &service)
 	if err != nil {
@@ -94,7 +94,7 @@ func ServiceDelete(c *gin.Context) {
 		return
 	}
 
-	services, _ := c.Keys["services"].(src.Services)
+	services := c.Keys["services"].(src.Services)
 
 	err = services.DeleteService(int64(id))
 	if err != nil {
@@ -110,7 +110,7 @@ func ServiceDelete(c *gin.Context) {
  */
 
 func IncidentList(c *gin.Context) {
-	incidents, _ := c.Keys["incidents"].(src.Incidents)
+	incidents := c.Keys["incidents"].(src.Incidents)
 
 	i, err := incidents.GetLatestIncidents()
 	if err != nil {
@@ -128,15 +128,15 @@ func IncidentPost(c *gin.Context) {
 		return
 	}
 
-	incidents, _ := c.Keys["incidents"].(src.Incidents)
+	incident.Updates = nil
+
+	incidents := c.Keys["incidents"].(src.Incidents)
 
 	err = incidents.InsertIncident(&incident)
 	if err != nil {
 		c.AbortWithStatus(http.StatusBadRequest)
 		return
 	}
-
-	incident.Updates = nil
 
 	c.JSON(http.StatusCreated, incident)
 }
@@ -149,7 +149,7 @@ func IncidentGet(c *gin.Context) {
 		return
 	}
 
-	incidents, _ := c.Keys["incidents"].(src.Incidents)
+	incidents := c.Keys["incidents"].(src.Incidents)
 
 	i, err := incidents.GetIncident(int64(id))
 	if err != nil {
@@ -168,9 +168,96 @@ func IncidentDelete(c *gin.Context) {
 		return
 	}
 
-	incidents, _ := c.Keys["incidents"].(src.Incidents)
+	incidents := c.Keys["incidents"].(src.Incidents)
 
 	err = incidents.DeleteIncident(int64(id))
+
+	if err != nil {
+		c.AbortWithStatus(http.StatusNotFound)
+		return
+	}
+
+	c.AbortWithStatus(http.StatusNoContent)
+}
+
+func IncidentUpdateList(c *gin.Context) {
+	incidentId := c.Param("id")
+	id, err := strconv.Atoi(incidentId)
+	if err != nil {
+		c.AbortWithStatus(http.StatusBadRequest)
+		return
+	}
+
+	incidents := c.Keys["incidents"].(src.Incidents)
+
+	incident, err := incidents.GetIncident(int64(id))
+
+	if err != nil {
+		c.AbortWithStatus(http.StatusNotFound)
+		return
+	}
+
+	c.JSON(http.StatusOK, incident.Updates)
+}
+
+func IncidentUpdatePost(c *gin.Context) {
+	incidentId := c.Param("id")
+	id, err := strconv.Atoi(incidentId)
+	if err != nil {
+		c.AbortWithStatus(http.StatusBadRequest)
+		return
+	}
+
+	var incidentUpdate src.IncidentUpdate
+	err = c.BindJSON(&incidentUpdate)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	incidents := c.Keys["incidents"].(src.Incidents)
+
+	err = incidents.InsertIncidentUpdate(int64(id), &incidentUpdate)
+
+	if err != nil {
+		c.AbortWithStatus(http.StatusBadRequest)
+		return
+	}
+
+	c.JSON(http.StatusCreated, incidentUpdate)
+}
+
+func IncidentUpdateGet(c *gin.Context) {
+	incidentId := c.Param("updateId")
+	id, err := strconv.Atoi(incidentId)
+	if err != nil {
+		c.AbortWithStatus(http.StatusBadRequest)
+		return
+	}
+
+	incidents := c.Keys["incidents"].(src.Incidents)
+
+	incidentUpdate, err := incidents.GetIncidentUpdate(int64(id))
+
+	if err != nil {
+		c.AbortWithStatus(http.StatusNotFound)
+		return
+	}
+
+	c.JSON(http.StatusOK, incidentUpdate)
+}
+
+func IncidentUpdateDelete(c *gin.Context) {
+	incidentId := c.Param("updateId")
+	id, err := strconv.Atoi(incidentId)
+	if err != nil {
+		c.AbortWithStatus(http.StatusBadRequest)
+		return
+	}
+
+	incidents := c.Keys["incidents"].(src.Incidents)
+
+	err = incidents.DeleteIncidentUpdate(int64(id))
 
 	if err != nil {
 		c.AbortWithStatus(http.StatusNotFound)
