@@ -7,6 +7,7 @@ import (
 	"github.com/gin-gonic/gin/binding"
 	"github.com/go-pg/pg"
 	"log"
+	"net/http"
 	"os"
 	"runtime"
 )
@@ -28,21 +29,25 @@ func main() {
 
 	router.GET("/", routes.Dashboard)
 
-	router.GET("/api/services", routes.ServiceList)
-	router.POST("/api/services", routes.ServicePost)
-	router.GET("/api/services/:id", routes.ServiceGet)
-	router.PATCH("/api/services/:id", routes.ServicePatch)
-	router.DELETE("/api/services/:id", routes.ServiceDelete)
+	api := router.Group("/api")
+	api.Use(Auth())
+	{
+		api.GET("/services", routes.ServiceList)
+		api.POST("/services", routes.ServicePost)
+		api.GET("/services/:id", routes.ServiceGet)
+		api.PATCH("/services/:id", routes.ServicePatch)
+		api.DELETE("/services/:id", routes.ServiceDelete)
 
-	router.GET("/api/incidents", routes.IncidentList)
-	router.POST("/api/incidents", routes.IncidentPost)
-	router.GET("/api/incidents/:id", routes.IncidentGet)
-	router.DELETE("/api/incidents/:id", routes.IncidentDelete)
+		api.GET("/incidents", routes.IncidentList)
+		api.POST("/incidents", routes.IncidentPost)
+		api.GET("/incidents/:id", routes.IncidentGet)
+		api.DELETE("/incidents/:id", routes.IncidentDelete)
 
-	router.GET("/api/incidents/:id/updates", routes.IncidentUpdateList)
-	router.POST("/api/incidents/:id/updates", routes.IncidentUpdatePost)
-	router.GET("/api/incidents/:id/updates/:updateId", routes.IncidentUpdateGet)
-	router.DELETE("/api/incidents/:id/updates/:updateId", routes.IncidentUpdateDelete)
+		api.GET("/incidents/:id/updates", routes.IncidentUpdateList)
+		api.POST("/incidents/:id/updates", routes.IncidentUpdatePost)
+		api.GET("/incidents/:id/updates/:updateId", routes.IncidentUpdateGet)
+		api.DELETE("/incidents/:id/updates/:updateId", routes.IncidentUpdateDelete)
+	}
 
 	router.Run()
 
@@ -80,6 +85,20 @@ func State() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		c.Set("services", services)
 		c.Set("incidents", incidents)
+		c.Next()
+	}
+}
+
+func Auth() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		token := c.GetHeader("Authorization")
+		validToken := os.Getenv("API_TOKEN")
+
+		if !(len(validToken) > 0 && token == validToken) {
+			c.AbortWithStatus(http.StatusUnauthorized)
+			return
+		}
+
 		c.Next()
 	}
 }
