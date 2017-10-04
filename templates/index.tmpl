@@ -8,6 +8,12 @@
     <link href="https://fonts.googleapis.com/css?family=Raleway" rel="stylesheet">
     <link rel="stylesheet" href="static/css/app.css" />
     <link rel="stylesheet" href="static/css/font-awesome.min.css">
+
+    <style>
+        .header {
+            background-color: {{ .backgroundColor }};
+        }
+    </style>
 </head>
 <body>
     <div class="header"></div>
@@ -15,7 +21,7 @@
         <div class="spacer">
 
             <div class="flex row">
-                <img class="logo" src="static/img/logo.png" />
+                <img class="logo" src="{{ .logo }}" />
             </div>
 
             <div class="info-header">

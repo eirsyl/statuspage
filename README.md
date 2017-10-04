@@ -19,3 +19,6 @@ all variables you can use.
 |POSTGRES_USER    |The postgres username for authorization|
 |POSTGRES_PASSWORD|The postgres password for authorization|
 |POSTGRES_DB      |The postgres db name|
+|SITE_OWNER       |The owner of the side, visible in page title|
+|SITE_COLOR       |The background color applied on the header element|
+|SITE_LOGO        |Custom logo, served from another site or local path inside the static folder|
