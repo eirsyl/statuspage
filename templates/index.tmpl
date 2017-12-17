@@ -69,7 +69,7 @@
                                             <h3>{{ $incident.Title }}</h3>
 
                                             {{ range $update := $incident.Updates }}
-                                                <p><b>{{ $update.Status }}</b> - {{$update.Message}}</p>
+                                                <p><b>{{ $update.Time.Format "15:04" }} {{ $update.Status }}</b> - {{$update.Message}}</p>
                                             {{ end }}
                                         {{ end }}
                                     </div>
