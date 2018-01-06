@@ -1,9 +1,30 @@
-version: '2'
+version: "3"
 
 services:
   postgres:
     image: postgres:9.5
-    ports:
-      - '127.0.0.1:5432:5432'
+    volumes:
+      - /var/lib/postgresql/data
     environment:
       - POSTGRES_USER=statuspage
+      - POSTGRES_PASSWORD=statuspage
+    restart: always
+  statuspage:
+    build:
+      context: .
+    ports:
+      - 80:8080
+    links:
+      - postgres:postgres
+    environment:
+      - API_TOKEN=  # This is the token clients should use to access the API (AUTHORIZATION header)
+      - POSTGRES_ADDRESS=postgres:5432  # The address of the postgres instance
+      - POSTGRES_USER=statuspage  # The postgres username for authorization
+      - POSTGRES_PASSWORD=statuspage  # The postgres password for authorization
+      - POSTGRES_DB=statuspage  # The postgres db name
+      - SITE_OWNER="DEMO"  # The owner of the side, visible in page title
+      - SITE_COLOR=  # The background color applied on the header element
+      - SITE_LOGO=  # Custom logo, served from another site or local path inside the static folder
+    depends_on:
+      - postgres
+    restart: on-failure
