@@ -22,3 +22,16 @@ all variables you can use.
 |SITE_OWNER       |The owner of the side, visible in page title|
 |SITE_COLOR       |The background color applied on the header element|
 |SITE_LOGO        |Custom logo, served from another site or local path inside the static folder|
+
+
+## API request examples
+
+Create new service
+```bash
+curl -H "Authorization: 123" -v -d '{"Group":"External API","Enabled": true, "Name": "User API", "Status": "Operational", "Description": "User API for customers"}' -H "Content-Type: application/json" -X POST http://localhost/api/services
+```
+
+Create new incident
+```bash
+curl -H "Authorization: 123" -v -d '{"time": "2018-01-01T13:50:00-08:00", "status":"Identified", "message":"oh no! i am broken", "Title":"User API is down"}' -H "Content-Type: application/json" -X POST http://localhost/api/incidents
+```
