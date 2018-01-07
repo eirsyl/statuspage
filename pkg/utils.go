@@ -3,7 +3,7 @@ package pkg
 import (
 	"github.com/go-pg/pg"
 	"github.com/go-pg/pg/orm"
-	"log"
+	log "github.com/sirupsen/logrus"
 	"runtime"
 	"time"
 )

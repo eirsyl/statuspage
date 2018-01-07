@@ -5,6 +5,7 @@ import (
 	"github.com/eirsyl/statuspage/pkg/routes"
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
+	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -47,8 +48,10 @@ var serverCmd = &cobra.Command{
 		pkg.ConfigRuntime()
 		gin.SetMode(gin.ReleaseMode)
 
-		router := gin.Default()
+		router := gin.New()
+		router.Use(gin.Recovery())
 		router.Use(pkg.State())
+		router.Use(pkg.Logger())
 
 		binding.Validator.RegisterValidation("incidentstatus", pkg.IncidentStatus)
 		binding.Validator.RegisterValidation("servicestatus", pkg.ServiceStatus)
@@ -79,6 +82,10 @@ var serverCmd = &cobra.Command{
 		}
 
 		listenAddress := viper.GetString("listenAddress")
-		router.Run(listenAddress)
+		log.WithFields(log.Fields{"address": listenAddress}).Info("Starting server")
+		err := router.Run(listenAddress)
+		if err != nil {
+			log.Error("Server exited ", err)
+		}
 	},
 }
