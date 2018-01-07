@@ -1,15 +1,15 @@
 package routes
 
 import (
-	"github.com/eirsyl/statuspage/src"
+	"github.com/eirsyl/statuspage/pkg"
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"os"
 )
 
 func Dashboard(c *gin.Context) {
-	services := c.Keys["services"].(src.Services)
-	incidents := c.Keys["incidents"].(src.Incidents)
+	services := c.Keys["services"].(pkg.Services)
+	incidents := c.Keys["incidents"].(pkg.Incidents)
 
 	res, err := services.GetServices()
 	if err != nil {
@@ -40,8 +40,8 @@ func Dashboard(c *gin.Context) {
 		"owner":              owner,
 		"backgroundColor":    color,
 		"logo":               logo,
-		"services":           src.AggregateServices(res),
-		"mostCriticalStatus": src.MostCriticalStatus(res),
-		"incidents":          src.AggregateIncidents(inc),
+		"services":           pkg.AggregateServices(res),
+		"mostCriticalStatus": pkg.MostCriticalStatus(res),
+		"incidents":          pkg.AggregateIncidents(inc),
 	})
 }

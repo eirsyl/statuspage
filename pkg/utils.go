@@ -1,10 +1,18 @@
-package src
+package pkg
 
 import (
 	"github.com/go-pg/pg"
 	"github.com/go-pg/pg/orm"
+	"log"
+	"runtime"
 	"time"
 )
+
+func ConfigRuntime() {
+	nuCPU := runtime.NumCPU()
+	runtime.GOMAXPROCS(nuCPU)
+	log.Printf("Running with %d CPUs\n", nuCPU)
+}
 
 /*
  * Aggregate and group services by service group.

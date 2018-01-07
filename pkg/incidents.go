@@ -1,4 +1,4 @@
-package src
+package pkg
 
 import (
 	"github.com/go-pg/pg"
