@@ -3,8 +3,9 @@ package routes
 import (
 	"github.com/eirsyl/statuspage/pkg"
 	"github.com/gin-gonic/gin"
+	"github.com/spf13/viper"
+	"log"
 	"net/http"
-	"os"
 )
 
 func Dashboard(c *gin.Context) {
@@ -21,19 +22,18 @@ func Dashboard(c *gin.Context) {
 		panic(err)
 	}
 
-	owner := os.Getenv("SITE_OWNER")
+	owner, color, logo := viper.GetString("siteOwner"), viper.GetString("siteColor"), viper.GetString("siteLogo")
+
 	if owner == "" {
-		owner = "Abakus"
+		log.Fatal("The owner cannot be empty")
 	}
 
-	color := os.Getenv("SITE_COLOR")
 	if color == "" {
-		color = "#343434"
+		log.Fatal("The color cannot be empty")
 	}
 
-	logo := os.Getenv("SITE_LOGO")
 	if logo == "" {
-		logo = "static/img/logo.png"
+		log.Fatal("The logo cannot be empty")
 	}
 
 	c.HTML(http.StatusOK, "index.tmpl", gin.H{

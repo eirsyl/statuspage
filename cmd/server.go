@@ -5,29 +5,38 @@ import (
 	"github.com/eirsyl/statuspage/pkg/routes"
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
-	"github.com/go-pg/pg"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
-	"net/http"
-	"os"
 )
 
 func init() {
+	serverCmd.PersistentFlags().StringP("listenAddress", "l", ":8080", "The address the server should listen on")
 	serverCmd.PersistentFlags().StringP("token", "t", "", "The token used for authorizing with the API")
-	serverCmd.PersistentFlags().StringP("postgresAddress", "a", "statuspage", "The address postgres is listening on")
+	serverCmd.PersistentFlags().StringP("postgresAddress", "a", "127.0.0.1:5432", "The address postgres is listening on")
 	serverCmd.PersistentFlags().StringP("postgresUser", "u", "statuspage", "The user statuspage should connect to postgres as")
 	serverCmd.PersistentFlags().StringP("postgresPassword", "p", "", "The postgres password")
 	serverCmd.PersistentFlags().StringP("postgresDatabase", "d", "statuspage", "The postgres database statuspage should use")
+	serverCmd.PersistentFlags().StringP("siteOwner", "", "Statuspage", "Site owner, used by the html templates")
+	serverCmd.PersistentFlags().StringP("siteColor", "", "#343434", "The top color used in the templates")
+	serverCmd.PersistentFlags().StringP("siteLogo", "", "static/img/logo.png", "Path to logo")
+	viper.BindPFlag("listenAddress", serverCmd.PersistentFlags().Lookup("listenAddress"))
 	viper.BindPFlag("token", serverCmd.PersistentFlags().Lookup("token"))
 	viper.BindPFlag("postgresAddress", serverCmd.PersistentFlags().Lookup("postgresAddress"))
 	viper.BindPFlag("postgresUser", serverCmd.PersistentFlags().Lookup("postgresUser"))
 	viper.BindPFlag("postgresPassword", serverCmd.PersistentFlags().Lookup("postgresPassword"))
 	viper.BindPFlag("postgresDatabase", serverCmd.PersistentFlags().Lookup("postgresDatabase"))
+	viper.BindPFlag("siteOwner", serverCmd.PersistentFlags().Lookup("siteOwner"))
+	viper.BindPFlag("siteColor", serverCmd.PersistentFlags().Lookup("siteColor"))
+	viper.BindPFlag("siteLogo", serverCmd.PersistentFlags().Lookup("siteLogo"))
+	viper.BindEnv("listenAddress", "LISTEN_ADDRESS")
 	viper.BindEnv("token", "TOKEN")
 	viper.BindEnv("postgresAddress", "POSTGRES_ADDRESS")
 	viper.BindEnv("postgresUser", "POSTGRES_USER")
 	viper.BindEnv("postgresPassword", "POSTGRES_PASSWORD")
 	viper.BindEnv("postgresDatabase", "POSTGRES_DATABASE")
+	viper.BindEnv("siteOwner", "SITE_OWNER")
+	viper.BindEnv("siteColor", "SITE_COLOR")
+	viper.BindEnv("siteLogo", "SITE_LOGO")
 	RootCmd.AddCommand(serverCmd)
 }
 
@@ -39,7 +48,7 @@ var serverCmd = &cobra.Command{
 		gin.SetMode(gin.ReleaseMode)
 
 		router := gin.Default()
-		router.Use(State())
+		router.Use(pkg.State())
 
 		binding.Validator.RegisterValidation("incidentstatus", pkg.IncidentStatus)
 		binding.Validator.RegisterValidation("servicestatus", pkg.ServiceStatus)
@@ -50,7 +59,7 @@ var serverCmd = &cobra.Command{
 		router.GET("/", routes.Dashboard)
 
 		api := router.Group("/api")
-		api.Use(Auth())
+		api.Use(pkg.Auth())
 		{
 			api.GET("/services", routes.ServiceList)
 			api.POST("/services", routes.ServicePost)
@@ -69,50 +78,7 @@ var serverCmd = &cobra.Command{
 			api.DELETE("/incidents/:id/updates/:updateId", routes.IncidentUpdateDelete)
 		}
 
-		router.Run()
+		listenAddress := viper.GetString("listenAddress")
+		router.Run(listenAddress)
 	},
-}
-
-func State() gin.HandlerFunc {
-	pgAddr := os.Getenv("POSTGRES_ADDRESS")
-	pgUser := os.Getenv("POSTGRES_USER")
-	pgPassword := os.Getenv("POSTGRES_PASSWORD")
-	pgDB := os.Getenv("POSTGRES_DB")
-
-	db := pg.Connect(&pg.Options{
-		Addr:     pgAddr,
-		User:     pgUser,
-		Password: pgPassword,
-		Database: pgDB,
-	})
-
-	if err := pkg.CreateSchema(db); err != nil {
-		panic(err)
-	}
-
-	services := pkg.Services{}
-	services.Initialize(*db)
-
-	incidents := pkg.Incidents{}
-	incidents.Initialize(*db)
-
-	return func(c *gin.Context) {
-		c.Set("services", services)
-		c.Set("incidents", incidents)
-		c.Next()
-	}
-}
-
-func Auth() gin.HandlerFunc {
-	return func(c *gin.Context) {
-		token := c.GetHeader("Authorization")
-		validToken := os.Getenv("API_TOKEN")
-
-		if !(len(validToken) > 0 && token == validToken) {
-			c.AbortWithStatus(http.StatusUnauthorized)
-			return
-		}
-
-		c.Next()
-	}
 }

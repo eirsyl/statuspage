@@ -10,4 +10,4 @@ RUN set -e \
     && dep ensure \
     && go build
 
-CMD ["./statuspage"]
+CMD ["./statuspage", "server"]
