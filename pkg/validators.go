@@ -1,4 +1,4 @@
-package src
+package pkg
 
 import (
 	"gopkg.in/go-playground/validator.v8"

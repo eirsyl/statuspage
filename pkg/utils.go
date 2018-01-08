@@ -1,10 +1,18 @@
-package src
+package pkg
 
 import (
 	"github.com/go-pg/pg"
 	"github.com/go-pg/pg/orm"
+	log "github.com/sirupsen/logrus"
+	"runtime"
 	"time"
 )
+
+func ConfigRuntime() {
+	nuCPU := runtime.NumCPU()
+	runtime.GOMAXPROCS(nuCPU)
+	log.Printf("Running with %d CPUs\n", nuCPU)
+}
 
 /*
  * Aggregate and group services by service group.
@@ -107,4 +115,13 @@ func CreateSchema(db *pg.DB) error {
 		}
 	}
 	return nil
+}
+
+// RemoveLastSlash removes the last character in a string if the character is a string.
+func RemoveLastSlash(url string) string {
+	l := len(url)
+	if l > 0 && url[l-1] == '/' {
+		return url[:l-2]
+	}
+	return url
 }

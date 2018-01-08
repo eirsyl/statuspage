@@ -1,7 +1,7 @@
 package routes
 
 import (
-	"github.com/eirsyl/statuspage/src"
+	"github.com/eirsyl/statuspage/pkg"
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"strconv"
@@ -12,7 +12,7 @@ import (
  */
 
 func ServiceList(c *gin.Context) {
-	services := c.Keys["services"].(src.Services)
+	services := c.Keys["services"].(pkg.Services)
 
 	s, err := services.GetServices()
 	if err != nil {
@@ -23,14 +23,14 @@ func ServiceList(c *gin.Context) {
 }
 
 func ServicePost(c *gin.Context) {
-	var service src.Service
+	var service pkg.Service
 	err := c.BindJSON(&service)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	services := c.Keys["services"].(src.Services)
+	services := c.Keys["services"].(pkg.Services)
 
 	err = services.InsertService(&service)
 	if err != nil {
@@ -49,7 +49,7 @@ func ServiceGet(c *gin.Context) {
 		return
 	}
 
-	services := c.Keys["services"].(src.Services)
+	services := c.Keys["services"].(pkg.Services)
 
 	s, err := services.GetService(int64(id))
 	if err != nil {
@@ -68,14 +68,14 @@ func ServicePatch(c *gin.Context) {
 		return
 	}
 
-	var service src.Service
+	var service pkg.Service
 	err = c.BindJSON(&service)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	services := c.Keys["services"].(src.Services)
+	services := c.Keys["services"].(pkg.Services)
 
 	err = services.UpdateService(int64(id), &service)
 	if err != nil {
@@ -94,7 +94,7 @@ func ServiceDelete(c *gin.Context) {
 		return
 	}
 
-	services := c.Keys["services"].(src.Services)
+	services := c.Keys["services"].(pkg.Services)
 
 	err = services.DeleteService(int64(id))
 	if err != nil {
@@ -110,7 +110,7 @@ func ServiceDelete(c *gin.Context) {
  */
 
 func IncidentList(c *gin.Context) {
-	incidents := c.Keys["incidents"].(src.Incidents)
+	incidents := c.Keys["incidents"].(pkg.Incidents)
 
 	i, err := incidents.GetLatestIncidents()
 	if err != nil {
@@ -121,7 +121,7 @@ func IncidentList(c *gin.Context) {
 }
 
 func IncidentPost(c *gin.Context) {
-	var incident src.Incident
+	var incident pkg.Incident
 	err := c.BindJSON(&incident)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -130,7 +130,7 @@ func IncidentPost(c *gin.Context) {
 
 	incident.Updates = nil
 
-	incidents := c.Keys["incidents"].(src.Incidents)
+	incidents := c.Keys["incidents"].(pkg.Incidents)
 
 	err = incidents.InsertIncident(&incident)
 	if err != nil {
@@ -149,7 +149,7 @@ func IncidentGet(c *gin.Context) {
 		return
 	}
 
-	incidents := c.Keys["incidents"].(src.Incidents)
+	incidents := c.Keys["incidents"].(pkg.Incidents)
 
 	i, err := incidents.GetIncident(int64(id))
 	if err != nil {
@@ -168,7 +168,7 @@ func IncidentDelete(c *gin.Context) {
 		return
 	}
 
-	incidents := c.Keys["incidents"].(src.Incidents)
+	incidents := c.Keys["incidents"].(pkg.Incidents)
 
 	err = incidents.DeleteIncident(int64(id))
 
@@ -188,7 +188,7 @@ func IncidentUpdateList(c *gin.Context) {
 		return
 	}
 
-	incidents := c.Keys["incidents"].(src.Incidents)
+	incidents := c.Keys["incidents"].(pkg.Incidents)
 
 	incident, err := incidents.GetIncident(int64(id))
 
@@ -208,14 +208,14 @@ func IncidentUpdatePost(c *gin.Context) {
 		return
 	}
 
-	var incidentUpdate src.IncidentUpdate
+	var incidentUpdate pkg.IncidentUpdate
 	err = c.BindJSON(&incidentUpdate)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	incidents := c.Keys["incidents"].(src.Incidents)
+	incidents := c.Keys["incidents"].(pkg.Incidents)
 
 	err = incidents.InsertIncidentUpdate(int64(id), &incidentUpdate)
 
@@ -235,7 +235,7 @@ func IncidentUpdateGet(c *gin.Context) {
 		return
 	}
 
-	incidents := c.Keys["incidents"].(src.Incidents)
+	incidents := c.Keys["incidents"].(pkg.Incidents)
 
 	incidentUpdate, err := incidents.GetIncidentUpdate(int64(id))
 
@@ -255,7 +255,7 @@ func IncidentUpdateDelete(c *gin.Context) {
 		return
 	}
 
-	incidents := c.Keys["incidents"].(src.Incidents)
+	incidents := c.Keys["incidents"].(pkg.Incidents)
 
 	err = incidents.DeleteIncidentUpdate(int64(id))
 
