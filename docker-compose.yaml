@@ -19,7 +19,7 @@ services:
     links:
       - postgres:postgres
     environment:
-      - API_TOKEN=  # This is the token clients should use to access the API (AUTHORIZATION header)
+      - TOKEN=auth  # This is the token clients should use to access the API (AUTHORIZATION header)
       - POSTGRES_ADDRESS=postgres:5432  # The address of the postgres instance
       - POSTGRES_USER=statuspage  # The postgres username for authorization
       - POSTGRES_PASSWORD=statuspage  # The postgres password for authorization

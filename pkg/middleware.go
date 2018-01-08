@@ -17,6 +17,7 @@ func Auth() gin.HandlerFunc {
 		token := c.GetHeader("Authorization")
 
 		if validToken == "" || token != validToken {
+			log.WithFields(log.Fields{"token": token}).Warn("Permission denied, invalid token")
 			c.AbortWithStatus(http.StatusUnauthorized)
 			return
 		}

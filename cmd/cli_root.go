@@ -1,9 +1,10 @@
 package cmd
 
 import (
-	"fmt"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
+
+	"github.com/eirsyl/statuspage/cmd/cli"
 )
 
 func init() {
@@ -13,14 +14,12 @@ func init() {
 	viper.BindPFlag("token", cliCmd.PersistentFlags().Lookup("token"))
 	viper.BindEnv("apiUrl", "API_URL")
 	viper.BindEnv("token", "TOKEN")
+	cliCmd.AddCommand(cli.IncidentCmd)
+	cliCmd.AddCommand(cli.ServiceCmd)
 	RootCmd.AddCommand(cliCmd)
 }
 
 var cliCmd = &cobra.Command{
 	Use:   "cli",
 	Short: "Access the statuspage api from the command line",
-	Run: func(cmd *cobra.Command, args []string) {
-		apiUrl, token := viper.GetString("apiUrl"), viper.GetString("token")
-		fmt.Print(apiUrl, token)
-	},
 }
